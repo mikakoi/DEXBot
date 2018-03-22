@@ -35,6 +35,9 @@ class Strategy(BaseStrategy):
         else:
             self.center_price = self.target["center_price"]
 
+        self.is_relative_order_size = self.target['amount_relative']
+        self.order_size = self.target['amount']
+
         self.buy_price = None
         self.sell_price = None
         self.calculate_order_prices()
@@ -54,8 +57,20 @@ class Strategy(BaseStrategy):
         self.disabled = True
         self.log.info(self.execute())
 
+    @property
+    def amount(self):
+        """
+        Get amount, calculate if order size is relative
+        """
+        if self.is_relative_order_size:
+            balance = float(self.balance(self.market["quote"]))
+            return balance * (self.order_size / 2 / 100)
+        else:
+            return self.target['amount'] / 2
+
     def init_strategy(self):
-        amount = self.target['amount'] / 2
+
+        amount = self.amount
 
         # Recalculate buy and sell order prices
         self.calculate_order_prices()
@@ -133,7 +148,7 @@ class Strategy(BaseStrategy):
                 buy_order_amount = buy_order['quote']['amount']
             except KeyError:
                 buy_order_amount = 0
-            new_buy_amount = buy_order_amount - bought_amount + sold_amount
+           new_buy_amount = buy_order_amount - bought_amount + sold_amount
             if float(self.balance(self.market["base"])) < new_buy_amount:
                 self.log.critical(
                     'Insufficient buy balance, needed {} {}'.format(self.buy_price * new_buy_amount,
