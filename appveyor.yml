@@ -46,7 +46,7 @@ clone_depth: 1
 
 deploy:
   - provider: GitHub
-    artifact: DEXBot-win64.zip
+    artifact: DEXBot-win32.zip
     draft: false
     prerelease: false
     force_update: true
