@@ -19,10 +19,10 @@ lint:
 	flake8 dexbot/
 
 build: pip
-	python3 setup.py build
+	python setup.py build
 
 install: build
-	python3 setup.py install
+	python setup.py install
 
 install-user: build
 	python3 setup.py install --user
